@@ -1,1 +1,3 @@
 # SimpleKeyValueDB
+
+sudo make up
