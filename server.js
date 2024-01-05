@@ -59,7 +59,7 @@ function processData(chunk) {
         }
 
         saveKey(requestData.key, requestData.value);
-        return null;
+        return '';
     } else if (requestData.action === "get_key") {
         if (!requestData?.key) {
             throw new Error('Wrong request. Expect key field.');
@@ -73,7 +73,7 @@ function processData(chunk) {
         }
 
         deleteKey(requestData.key);
-        return null;
+        return '';
     } else {
         throw new Error('Wrong request. Unexpect action.');
     }
