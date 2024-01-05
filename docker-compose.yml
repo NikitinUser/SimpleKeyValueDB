@@ -1,8 +1,10 @@
 version: '3'
 services:
-  server:
-    build:
-      context: .
-      dockerfile: Dockerfile
+  your-app:
+    build: .
     ports:
       - "8080:8080"
+    volumes:
+      - ./db:/app/db
+    environment:
+      - NODE_ENV=production
