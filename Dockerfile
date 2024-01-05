@@ -1,14 +1,13 @@
-# Используем официальный образ Golang
-FROM golang:latest
+FROM node:18.12-alpine as base
 
-# Копируем исходный код приложения в контейнер
-COPY . /app
-
-# Устанавливаем рабочую директорию
 WORKDIR /app
 
-# Собираем приложение
-RUN go build -o server .
+COPY package*.json ./
 
-# Определяем команду для запуска сервера
-CMD ["./server"]
+RUN npm install
+
+COPY . .
+
+EXPOSE 8080
+
+CMD ["node", "server.js"]
