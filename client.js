@@ -6,11 +6,15 @@ const { stdin: input, stdout: output } = require('node:process');
 const port = 8080;
 const host = "0.0.0.0";
 
+const server_login = 'root';
+const server_pwd = 'root';
+
 console.log("write exit or ctrl + z for quit");
 
 var client = new net.Socket();
 client.connect(port, host, function() {
 	console.log('Connected');
+    client.write(server_login + " " + server_pwd);
 });
 
 client.on('data', function(data) {
@@ -19,6 +23,8 @@ client.on('data', function(data) {
 
 client.on('close', function() {
 	console.log('Connection closed');
+    client.destroy();
+    process.exit();
 });
 
 const rl = readline.createInterface({ input, output });

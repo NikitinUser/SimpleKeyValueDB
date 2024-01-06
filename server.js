@@ -4,6 +4,9 @@ const fs = require('node:fs');
 const port = 8080;
 const host = "0.0.0.0";
 
+const server_login = 'root';
+const server_pwd = 'root';
+
 global.clients = {};
 
 const server = new Net.Server();
@@ -15,16 +18,26 @@ server.listen(port, host, function() {
 server.on('connection', function(socket) {
     const clientIdentify = socket.remoteAddress + "_" + socket.remotePort;
 
-    global.clients[clientIdentify] = socket;
-
-    console.log('A new connection has been established. ' + clientIdentify);
-
     socket.on('data', function(chunk) {
+        if (!(global.clients[clientIdentify] ?? null)) {
+            try {
+                auth(chunk.toString());
+            } catch (e) {
+                socket.write(e.message);
+                socket.destroy();
+                return;
+            }
+
+            global.clients[clientIdentify] = socket;
+            console.log('A new connection has been established. ' + clientIdentify);
+            return;
+        }
+
         try {
-            const result = processData(chunk);
+            const result = processData(chunk.toString());
             socket.write(result);
         } catch (e) {
-            socket.write('error: ' + e);
+            socket.write('error: ' + e.message);
         }
     });
 
@@ -37,8 +50,7 @@ server.on('connection', function(socket) {
     });
 });
 
-function processData(chunk) {
-    let requestData = chunk.toString();
+function processData(requestData) {
     if (!isJSON(requestData)) {
         throw new Error('Wrong request. JSON expect.');
     }
@@ -65,8 +77,7 @@ function processData(chunk) {
             throw new Error('Wrong request. Expect key field.');
         }
 
-        const value = getKey(requestData.key);
-        return value;
+        return getKey(requestData.key);
     } else if (requestData.action === "delete_key") {
         if (!requestData?.key) {
             throw new Error('Wrong request. Expect key field.');
@@ -100,10 +111,25 @@ function saveKey(key, value) {
 }
 
 function getKey(key) {
+    if (!fs.existsSync('./db/' + key)) {
+        return '';
+    }
+
     const buffer = fs.readFileSync('./db/' + key);
     return buffer;
 }
 
 function deleteKey(key) {
     fs.unlinkSync('./db/' + key);
+}
+
+function auth(chunk) {
+    let credentials = chunk.trim().split(' ');
+
+    const login = credentials[0] ?? null;
+    const password = credentials[1] ?? null;
+
+    if (login !== server_login || password !== server_pwd) {
+        throw new Error('401 Unauthorized');
+    }
 }
