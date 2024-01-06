@@ -7,6 +7,8 @@ const host = "0.0.0.0";
 const server_login = 'root';
 const server_pwd = 'root';
 
+const folderpath = './db';
+
 global.clients = {};
 
 const server = new Net.Server();
@@ -14,6 +16,10 @@ const server = new Net.Server();
 server.listen(port, host, function() {
     console.log(`Server listening for connection requests on socket ${host}:${port}`);
 });
+
+if (!fs.existsSync(folderpath)) {
+    fs.mkdirSync(folderpath);
+}
 
 server.on('connection', function(socket) {
     const clientIdentify = socket.remoteAddress + "_" + socket.remotePort;
@@ -103,7 +109,7 @@ function isJSON(text) {
 }
 
 function saveKey(key, value) {
-    fs.writeFile('./db/' + key, value, err => {
+    fs.writeFile(folderpath + key, value, err => {
         if (err) {
             console.error(err);
         }
@@ -111,16 +117,16 @@ function saveKey(key, value) {
 }
 
 function getKey(key) {
-    if (!fs.existsSync('./db/' + key)) {
+    if (!fs.existsSync(folderpath + key)) {
         return '';
     }
 
-    const buffer = fs.readFileSync('./db/' + key);
+    const buffer = fs.readFileSync(folderpath + key);
     return buffer;
 }
 
 function deleteKey(key) {
-    fs.unlinkSync('./db/' + key);
+    fs.unlinkSync(folderpath + key);
 }
 
 function auth(chunk) {
