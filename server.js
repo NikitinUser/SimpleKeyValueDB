@@ -6,8 +6,11 @@ const Net = require('net');
 
 const Auth = require('./app/services/Auth');
 const Command = require('./app/services/Command');
+const Init = require('./app/services/Init');
 
 const clients = {};
+
+Init.init();
 
 const server = new Net.Server();
 

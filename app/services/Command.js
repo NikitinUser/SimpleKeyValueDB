@@ -1,8 +1,9 @@
-const fs = require('node:fs');
-
 const SaveKeyCommand = require('./commands/SaveKeyCommand');
 const GetKeyCommand = require('./commands/GetKeyCommand');
 const DeleteKeyCommand = require('./commands/DeleteKeyCommand');
+const AllKeysCommand = require('./commands/AllKeysCommand');
+const FolderSizeCommand = require('./commands/FolderSizeCommand');
+const SetTtlCommand = require('./commands/SetTtlCommand');
 
 const isJSON = require('./../utils/isJSON.js');
 
@@ -11,6 +12,9 @@ class Command {
         "save_key": SaveKeyCommand,
         "get_key": GetKeyCommand,
         "delete_key": DeleteKeyCommand,
+        "all_keys": AllKeysCommand,
+        "db_size": FolderSizeCommand,
+        "set_ttl": SetTtlCommand
     };
 
     handle(requestData) {
@@ -22,10 +26,6 @@ class Command {
     
         if (!requestData?.action) {
             throw new Error('Wrong request. Expect action field.');
-        }
-
-        if (!fs.existsSync(process.env.NODE_DB_FOLDER)) {
-            fs.mkdirSync(process.env.NODE_DB_FOLDER);
         }
 
         const command = this.commands[requestData.action] ?? null;

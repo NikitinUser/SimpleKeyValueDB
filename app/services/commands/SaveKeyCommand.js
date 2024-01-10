@@ -12,13 +12,20 @@ class SaveKeyCommand {
             throw new Error('Wrong request. Expect value field.');
         }
 
+        const valueSize = (new Blob([requestData.value]).size) / 1024 / 1024;
+        if (valueSize > process.env.NODE_DB_MAX_VALUE_MB) {
+            throw new Error(`Value size ${valueSize} MB, max value ${process.env.NODE_DB_MAX_VALUE_MB} MB`);
+        }
+
+        const stats = fs.statSync(process.env.NODE_DB_FOLDER);
+        const folderSize = (stats.size / 1024 / 1024) + valueSize;
+        if (folderSize > process.env.NODE_DB_MAX_FOLDER_MB) {
+            throw new Error(`Folder size with value ${folderSize} MB, max folder size ${process.env.NODE_DB_MAX_FOLDER_MB} MB`);
+        }
+
         validateKey(requestData?.key);
 
-        return this.saveKey(requestData.key, requestData.value);
-    }
-
-    saveKey(key, value) {
-        fs.writeFileSync(process.env.NODE_DB_FOLDER + key, value);
+        fs.writeFileSync(process.env.NODE_DB_FOLDER + requestData.key, requestData.value);
         return '';
     }
 }
