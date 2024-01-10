@@ -21,3 +21,4 @@ vendor
 /frontend/.vscode
 /backend/.vscode
 /db/*
+/ttl/*

@@ -32,11 +32,31 @@ const rl = readline.createInterface({ input, output });
 rl.on('line', (input) => {
     let inputArr = input.split(' ');
 
+    const action = inputArr[0] ?? null;
+    const key = inputArr[1] ?? null;
+    const value = getValue(inputArr);
+
     client.write(JSON.stringify(
         {
-            "action": inputArr[0] ?? null,
-            "key": inputArr[1] ?? null,
-            "value": inputArr[2] ?? null
+            "action": action,
+            "key": key,
+            "value": value
         }
     ));
-}); 
+});
+
+function getValue(inputArr) {
+    if ((inputArr[2] ?? null) === null) {
+        return null;
+    }
+
+    let value = inputArr[2];
+
+    if (inputArr.length > 3) {
+        for (let i = 3; i < inputArr.length; i++) {
+            value += " " + inputArr[i];
+        }
+    }
+
+    return value;
+}
