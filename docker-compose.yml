@@ -1,10 +1,10 @@
 version: '3'
 services:
-  your-app:
-    build: .
+  database:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["npm", "start"]
     ports:
       - "8080:8080"
-    volumes:
-      - ./db:/app/db
-    environment:
-      - NODE_ENV=local

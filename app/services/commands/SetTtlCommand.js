@@ -19,11 +19,13 @@ class SetTtlCommand {
             throw new Error('Wrong request. Expect int value in seconds.');
         }
 
-        
         const expiredTime = parseInt(Date.now() / 1000) + parseInt(requestData.value);
-        console.log(parseInt(+new Date()), parseInt(requestData.value), expiredTime);
 
-        fs.writeFileSync(process.env.NODE_DB_TTL_FOLDER + requestData.key, `${expiredTime}`);
+        fs.writeFile(process.env.NODE_DB_TTL_FOLDER + requestData.key, `${expiredTime}`, err => {
+            if (err) {
+                throw err;
+            }
+        });
 
         return '';
     }

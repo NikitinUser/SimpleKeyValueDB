@@ -25,7 +25,11 @@ class SaveKeyCommand {
 
         validateKey(requestData?.key);
 
-        fs.writeFileSync(process.env.NODE_DB_FOLDER + requestData.key, requestData.value);
+        fs.writeFile(process.env.NODE_DB_FOLDER + requestData.key, requestData.value, err => {
+            if (err) {
+                throw err;
+            }
+        });
         return '';
     }
 }
